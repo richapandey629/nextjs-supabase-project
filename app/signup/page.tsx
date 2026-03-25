@@ -1,11 +1,13 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter();
 
   const handleSignup = async () => {
     const { error } = await supabase.auth.signUp({
@@ -17,6 +19,7 @@ export default function Signup() {
       alert(error.message);
     } else {
       alert('Signup successful!');
+      router.push('/dashboard');
     }
   };
 

@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
   const [users, setUsers] = useState<any[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     fetchUsers();
@@ -25,6 +27,18 @@ export default function Dashboard() {
       setUsers(data);
     }
   };
+  
+  useEffect(() => {
+  checkUser();
+}, []);
+
+const checkUser = async () => {
+  const { data } = await supabase.auth.getUser();
+
+  if (!data.user) {
+    router.push('/login');
+  }
+};
 
 return (
     
