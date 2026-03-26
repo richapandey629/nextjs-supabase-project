@@ -11,6 +11,7 @@ export default function Dashboard() {
   const [ phone , setPhone ] = useState('');
   const [ age , setAge ] = useState('');
   const [ currentUser , setCurrentUser ] = useState<any>(null);
+  const [ editUser , setEditUser ] = useState<any>(null);
 
   const router = useRouter();
 
@@ -58,7 +59,7 @@ const handleAddUser = async () => {
     return;
   }
   const { error } = await supabase.from('contacts').insert([
-    { name, email, phone, age,
+    { name, email, phone, age : age ? Number(age) : null,
       user_id : currentUser.id
      }
   ]);
@@ -74,7 +75,45 @@ const handleAddUser = async () => {
     setAge('');
   }
 }
+  const handleDelete = async (id: any) => {
+  const { error } = await supabase
+    .from('contacts')
+    .delete()
+    .eq('id', id);
 
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("Deleted successfully");
+    fetchUsers(); // refresh UI
+  }
+};
+const handleEdit = (user: any) => {
+  if (!user) return;
+
+  setEditUser(user);
+
+  setName(user.name || '');
+  setEmail(user.email || '');
+  setPhone(user.phone || '');
+  setAge(user.age || '');
+};
+const handleUpdate = async () => {
+  if (!editUser) return;
+
+  const { error } = await supabase
+    .from('contacts')
+    .update({ name, email, phone, age : age ? Number(age) :null })
+    .eq('id', editUser.id);
+
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("Updated successfully");
+    setEditUser(null);
+    fetchUsers();
+  }
+};
 return (
     
   <div className="min-h-screen bg-gray-100 p-6">
@@ -107,7 +146,9 @@ return (
 
           <button
             className = "bg-blue-800 text-white px-4 py-2 rounded-2xl block"
-            onClick={handleAddUser}> Save </button>
+            onClick={editUser ? handleUpdate : handleAddUser}>  
+              {editUser ? "Update" : "Save"} 
+          </button>
 
           </div>
       <table className="w-full text-left border-collapse overflow-auto">
@@ -118,6 +159,7 @@ return (
             <th className="p-3 border">Email</th>
             <th className="p-3 border">Phone</th>
             <th className="p-3 border">Age</th>
+            <th className="p-3 border">Actions</th>
           </tr>
         </thead>
 
@@ -128,6 +170,15 @@ return (
               <td className="p-3 border hover:bg-blue-600">{user.email}</td>
               <td className= "p-3 border hover:bg-blue-600">{user.phone}</td>
               <td className="p-3 border hover:bg-blue-600">{user.age}</td>
+               <td className= "p-3 border">
+                <button className="bg-gray-500 text-white px-3 py-1 rounded-3xl "
+                      onClick={() => handleDelete(user.id)}> Delete
+                </button>
+                <button  className="bg-gray-500 text-white px-3.5 py-1 ml-2 rounded-3xl "
+                      onClick={() => handleEdit(user)}> Edit
+                </button>
+                
+              </td>
             </tr>
           ))}
         </tbody>
