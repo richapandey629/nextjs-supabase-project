@@ -10,6 +10,7 @@ export default function Dashboard() {
   const [ name , setName ] = useState('');
   const [ phone , setPhone ] = useState('');
   const [ age , setAge ] = useState('');
+
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -44,15 +45,22 @@ export default function Dashboard() {
 
 const checkUser = async () => {
   const { data } = await supabase.auth.getUser();
-
   if (!data.user) {
     router.push('/login');
   }
 };
 
 const handleAddUser = async () => {
+  const { data : userData } = await supabase.auth.getUser();
+
+  if (!userData.user){
+    alert("User not logged in")
+    return;
+  }
   const { error } = await supabase.from('contacts').insert([
-    { name, email, phone, age }
+    { name, email, phone, age,
+      user_id : userData.user.id
+     }
   ]);
 
   if (error) {
@@ -103,12 +111,14 @@ return (
             onClick={handleAddUser}> Save </button>
 
           </div>
-      <table className="w-full text-left border-collapse">
+      <table className="w-full text-left border-collapse overflow-auto">
 
         <thead className="bg-blue-900 text-white">
           <tr>
             <th className="p-3 border">Name</th>
             <th className="p-3 border">Email</th>
+            <th className="p-3 border">Phone</th>
+            <th className="p-3 border">Age</th>
           </tr>
         </thead>
 
@@ -117,6 +127,8 @@ return (
             <tr key={index} className="hover:bg-blue-600">
               <td className="p-3 border hover:bg-blue-600">{user.name}</td>
               <td className="p-3 border hover:bg-blue-600">{user.email}</td>
+              <td className= "p-3 border hover:bg-blue-600">{user.phone}</td>
+              <td className="p-3 border hover:bg-blue-600">{user.age}</td>
             </tr>
           ))}
         </tbody>
