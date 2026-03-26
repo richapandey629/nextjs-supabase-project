@@ -10,6 +10,7 @@ export default function Dashboard() {
   const [ name , setName ] = useState('');
   const [ phone , setPhone ] = useState('');
   const [ age , setAge ] = useState('');
+  const [ currentUser , setCurrentUser ] = useState<any>(null);
 
   const router = useRouter();
 
@@ -39,27 +40,26 @@ export default function Dashboard() {
     }
   };
   
-  useEffect(() => {
-  checkUser();
-}, []);
-
+ 
 const checkUser = async () => {
-  const { data } = await supabase.auth.getUser();
-  if (!data.user) {
+  const { data, error } = await supabase.auth.getUser();
+
+  if (error || !data.user) {
     router.push('/login');
+  } else {
+    setCurrentUser(data.user);
   }
 };
 
 const handleAddUser = async () => {
-  const { data : userData } = await supabase.auth.getUser();
 
-  if (!userData.user){
+  if (!currentUser){
     alert("User not logged in")
     return;
   }
   const { error } = await supabase.from('contacts').insert([
     { name, email, phone, age,
-      user_id : userData.user.id
+      user_id : currentUser.id
      }
   ]);
 
@@ -77,7 +77,6 @@ const handleAddUser = async () => {
 
 return (
     
-  <div className="min-h-screen bg-gray-100 p-6">
   <div className="min-h-screen bg-gray-100 p-6">
 
     <h1 className="text-3xl text-gray-900 text-center font-bold mb-6">Dashboard</h1>
@@ -134,7 +133,7 @@ return (
         </tbody>
 
       </table>
-    </div>
+    
   </div>
   <button
       className="mb-4 bg-red-700 text-white px-4 py-2 rounded "
