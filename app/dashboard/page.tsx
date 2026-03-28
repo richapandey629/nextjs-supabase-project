@@ -127,22 +127,22 @@ return (
         <input
           className="border p-4 mb-2 text-blue-900"
           placeholder="Name"
-          onChange={(e) => setName(e.target.value)}/>
+          value = { name} onChange={(e) => setName(e.target.value)}/>
 
           <input
           className="border p-4 mb-2 text-blue-900 block"
           placeholder = "Email"
-          onChange= {(e) => setEmail(e.target.value)}/>
+          value = {email} onChange= {(e) => setEmail(e.target.value)}/>
 
           <input
           className= "border p-4 mb-2 text-blue-900 block"
           placeholder = "Phone"
-          onChange= {(e) => setPhone(e.target.value)}/>
+          value = {phone} onChange= {(e) => setPhone(e.target.value)}/>
 
           <input
           className = "border p-4 mb-2 text-blue-900"
           placeholder = "Age"
-          onChange= {(e) => setAge(e.target.value)}/>
+          value = {age} onChange= {(e) => setAge(e.target.value)}/>
 
           <button
             className = "bg-blue-800 text-white px-4 py-2 rounded-2xl block"
